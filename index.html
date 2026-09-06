@@ -59,7 +59,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 .sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.acrylic{background:var(--surface);backdrop-filter:blur(var(--blur)) saturate(1.3);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.3);border:1px solid var(--line)}
+.acrylic{background:var(--surface);background:linear-gradient(135deg,var(--surface),color-mix(in srgb,var(--wall-tint,#4da3ff) 10%,transparent));backdrop-filter:blur(var(--blur)) saturate(1.3);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.3);border:1px solid var(--line)}
 .row{display:flex;align-items:center;gap:10px}
 .col{display:flex;flex-direction:column}
 .muted{color:var(--ink-2)} .tiny{font-size:.78em;color:var(--ink-3)}
@@ -161,8 +161,16 @@ html[data-theme="light"] .dicon{color:#0d1424;text-shadow:0 1px 3px rgba(255,255
 .rz.sw{left:-3px;bottom:-3px;width:13px;height:13px;cursor:nesw-resize}
 .rz.se{right:-3px;bottom:-3px;width:13px;height:13px;cursor:nwse-resize}
 #snapGhost{position:absolute;z-index:19;border-radius:12px;border:2px solid var(--accent);background:rgba(77,163,255,.2);display:none;transition:all 140ms var(--ease);pointer-events:none}
+.snapLayouts{position:fixed;z-index:120;display:grid;grid-template-columns:repeat(4,92px);gap:7px;padding:10px;border-radius:12px;box-shadow:var(--shadow)}
+.snapOption{display:grid;gap:5px;justify-items:center;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);font-size:.72em}
+.snapOption:hover{background:var(--surface-3);border-color:var(--accent)}
+.snapMini{width:72px;height:42px;display:grid;gap:2px;padding:2px;background:rgba(255,255,255,.08);border-radius:4px}
+.snapMini i{display:block;background:var(--accent);border-radius:2px;opacity:.85}
+.snapMini.two{grid-template-columns:1fr 1fr}.snapMini.wide{grid-template-columns:1.5fr 1fr}
+.snapMini.three{grid-template-columns:repeat(3,1fr)}.snapMini.quad{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.quickMore{border-top:1px solid var(--line);padding-top:8px}.quickMore summary{cursor:pointer;color:var(--ink-2);font-size:.82em;margin-bottom:8px}
 /* taskbar */
-#taskbar{position:absolute;left:0;right:0;bottom:0;height:56px;z-index:40;display:flex;align-items:center;padding:0 10px;gap:6px;padding-bottom:env(safe-area-inset-bottom)}
+#taskbar{position:absolute;left:0;right:0;bottom:0;height:48px;z-index:40;display:flex;align-items:center;padding:0 10px;gap:6px;padding-bottom:env(safe-area-inset-bottom)}
 html[data-tb="compact"] #taskbar{height:44px}
 html[data-tb="left"] #tbCenter{margin:0 auto 0 0}
 #tbCenter{margin:0 auto;display:flex;align-items:center;gap:4px;max-width:calc(100vw - 260px);overflow-x:auto;scrollbar-width:none}
@@ -183,10 +191,12 @@ html[data-tb="left"] #tbCenter{margin:0 auto 0 0}
 .panel{position:absolute;z-index:50;border-radius:var(--radius-panel);box-shadow:var(--shadow);display:none;flex-direction:column;overflow:hidden}
 .panel.on{display:flex;animation:panelIn var(--dur) var(--ease)}
 @keyframes panelIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
-#startMenu{bottom:64px;left:50%;transform:translateX(-50%);width:min(620px,94vw);max-height:min(70vh,660px);padding:20px}
+#startMenu{bottom:56px;left:50%;transform:translateX(-50%);width:min(620px,94vw);max-height:min(70vh,660px);padding:20px}
 html[data-tb="left"] #startMenu{left:12px;transform:none}
-#quickPanel,#notifPanel,#trayPanel{bottom:64px;right:10px;width:min(380px,94vw);max-height:min(76vh,640px);padding:16px;gap:12px}
-#searchPanel{bottom:64px;left:50%;transform:translateX(-50%);width:min(620px,94vw);max-height:min(70vh,600px);padding:14px;gap:10px}
+#quickPanel,#notifPanel,#trayPanel{bottom:56px;right:10px;width:min(380px,94vw);max-height:min(76vh,640px);padding:16px;gap:12px}
+#searchPanel{bottom:56px;left:50%;transform:translateX(-50%);width:min(620px,94vw);max-height:min(70vh,600px);padding:14px;gap:10px}
+#commandPalette{position:fixed;z-index:90;top:12vh;left:50%;transform:translateX(-50%);width:min(760px,94vw);max-height:min(70vh,680px);padding:14px;gap:10px}
+#commandPalette .cmdHint{padding:5px 2px;color:var(--ink-3);font-size:.76em}
 .sect{font-size:.78em;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2);margin:6px 0}
 .pinGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
 .pin{padding:12px 6px;border-radius:10px;display:grid;justify-items:center;gap:8px;text-align:center;font-size:.8em;transition:background var(--dur-fast)}
@@ -416,6 +426,7 @@ html[data-form="mobile"] .dicon{width:78px}
     <div id="tbLeft" class="row"></div>
     <div id="tbCenter"></div>
     <div id="tbRight">
+      <button class="tray" id="trayBtn" type="button" aria-label="Hidden system tray">⌃</button>
       <button class="tray" id="qsBtn" type="button" aria-label="Quick settings"><span id="trWifi">📶</span><span id="trVol">🔊</span><span id="trBat">🔋</span></button>
       <button id="clockBtn" type="button" aria-label="Date and time"><div id="tbTime">--:--</div><div id="tbDate"></div></button>
       <button class="tbBtn" id="notifBtn" type="button" aria-label="Notifications">🔔<span id="nBadge">0</span></button>
@@ -448,6 +459,7 @@ html[data-form="mobile"] .dicon{width:78px}
 
   <div id="quickPanel" class="panel acrylic" role="dialog" aria-label="Quick settings">
     <div class="qGrid" id="qsTiles"></div>
+    <details class="quickMore"><summary>More controls</summary><div class="qGrid" id="qsMore"></div></details>
     <div class="col" style="gap:6px"><label class="tiny" for="qsVol">Volume — Shaurya OS audio engine</label><div class="row">🔊<input id="qsVol" type="range" min="0" max="100" /></div></div>
     <div class="col" style="gap:6px"><label class="tiny" for="qsBright">Brightness — simulated UI dimming only</label><div class="row">☀<input id="qsBright" type="range" min="30" max="100" /></div></div>
     <div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:10px">
@@ -463,6 +475,12 @@ html[data-form="mobile"] .dicon{width:78px}
 
   <div id="trayPanel" class="panel acrylic" role="dialog" aria-label="System tray">
     <strong>System tray</strong><div id="trayBody" class="col" style="gap:8px"></div>
+  </div>
+  <div id="commandPalette" class="panel acrylic" role="dialog" aria-modal="true" aria-label="SHAURYA Command Center">
+    <div class="row" style="justify-content:space-between"><strong>SHAURYA Command Center</strong><span class="badge">Ctrl + Space</span></div>
+    <input id="commandInput" type="text" placeholder="Ask SHAURYA to open, change, restore or create…" aria-label="Command Center search" />
+    <div id="commandResults" class="col" style="gap:3px;overflow:auto"></div>
+    <div class="cmdHint">↑ ↓ navigate · Enter run · Esc close · Actions stay inside this browser workspace</div>
   </div>
 
   <div id="taskview" aria-label="Task view"><div class="tvWrap" id="tvWrap"></div><div class="tvDesks" id="tvDesks"></div></div>
@@ -526,7 +544,7 @@ const Store = {
 
 /* ---------------------------------- STATE ------------------------------- */
 const DEFAULT_SETTINGS = {
-  theme:"system", accent:"#4da3ff", wallpaper:"aurora", wallpaperImage:null, wallpaperFileName:null, transparency:0.72,
+  theme:"system", accent:"#4da3ff", wallpaper:"bloom", wallpaperImage:null, wallpaperFileName:null, transparency:0.72,
   motion:"full", contrast:"normal", uiScale:1, iconSize:1, radius:12, blur:18,
   taskbar:"center", clock24:false, showSeconds:false, quality:"auto",
   sounds:true, startupSound:true, loginSound:true, notifSound:true, volume:55, mediaVolume:80, muted:false, brightness:100,
@@ -679,13 +697,14 @@ function applySettings(){
   $("#brightLayer").style.opacity = String((100-s.brightness)/145);
   $("#nightLayer").style.opacity = s.nightLight?"0.16":"0";
   applyWallpaper();
-  const tbH = (isMobile()?62:(s.taskbar==="compact"?44:56));
+  const tbH = (isMobile()?62:(s.taskbar==="compact"?44:48));
   r.style.setProperty("--tb", tbH+"px");
   if($("#trWifi")) { setText($("#trWifi"), s.airplane?"✈":(s.wifi?"📶":"🚫")); setText($("#trVol"), s.volume==0?"🔇":"🔊"); setText($("#trBat"), s.batterySaver?"🪫":"🔋"); }
 }
 function contrastInk(hex){ try{ const c=hex.replace("#",""); const n=parseInt(c.length===3?c.split("").map(x=>x+x).join(""):c,16);
   const l=(((n>>16)&255)*0.299+((n>>8)&255)*0.587+(n&255)*0.114)/255; return l>0.6?"#0b1020":"#ffffff"; }catch(e){ return "#0b1020"; } }
 const WALLPAPERS = {
+  bloom:["#08162f","#175fa8","#2c2b72"], bloomSoft:["#102143","#2b76c8","#6d4ca7"],
   aurora:["#0a1226","#123055","#08243a"], midnight:["#05070f","#101a33","#0a1224"],
   obsidian:["#0b0b0d","#1c1c22","#0f0f14"], ocean:["#04202e","#0a4b63","#062736"],
   solar:["#2a1206","#7a3a12","#3a1a08"], platinum:["#dfe6f2","#b9c8e0","#eef2f9"]
@@ -696,6 +715,7 @@ function applyWallpaper(){
   L.classList.remove("img"); L.style.backgroundImage="";
   if(s.wallpaper==="solid"){ L.style.background=s.accent; $("#wpCanvas").style.display="none"; return; }
   const w=WALLPAPERS[s.wallpaper]||WALLPAPERS.aurora;
+  document.documentElement.style.setProperty("--wall-tint",w[1]);
   document.documentElement.style.setProperty("--wp-a",w[0]);
   document.documentElement.style.setProperty("--wp-b",w[1]);
   document.documentElement.style.setProperty("--wp-c",w[2]);
@@ -841,6 +861,33 @@ function focusWin(w){
   w.z=++OS.zTop; w.el.style.zIndex=String(w.z); w.minimized=false; w.el.classList.remove("min");
   renderTaskbar();
 }
+function hideSnapLayouts(w){
+  if(w.snapTimer){clearTimeout(w.snapTimer);w.snapTimer=null;}
+  if(w.snapPanel){w.snapPanel.remove();w.snapPanel=null;}
+}
+function showSnapLayouts(w,button){
+  hideSnapLayouts(w);
+  const panel=el("div",{class:"snapLayouts acrylic","aria-label":"Snap layouts"});
+  const choices=[
+    ["two","50 / 50","left"],["wide","60 / 40","wideLeft"],["three","3 columns","c1"],["quad","4 corners","tl"]
+  ];
+  choices.forEach(([kind,label,zone])=>{
+    const mini=el("span",{class:"snapMini "+kind});
+    const count=kind==="two"||kind==="wide"?2:kind==="three"?3:4;
+    for(let i=0;i<count;i++)mini.append(el("i"));
+    panel.append(el("button",{class:"snapOption",type:"button",onclick:()=>{hideSnapLayouts(w);snapTo(w,zone);}},[mini,el("span",{text:label})]));
+  });
+  $("#windows").append(panel);w.snapPanel=panel;
+  const r=button.getBoundingClientRect(), pw=panel.offsetWidth||410;
+  panel.style.left=clamp(r.right-pw,8,innerWidth-pw-8)+"px";
+  panel.style.top=clamp(r.bottom+8,8,innerHeight-90)+"px";
+  panel.addEventListener("pointerenter",()=>{if(w.snapTimer){clearTimeout(w.snapTimer);w.snapTimer=null;}});
+  panel.addEventListener("pointerleave",()=>{w.snapTimer=setTimeout(()=>hideSnapLayouts(w),180);});
+}
+function armSnapLayouts(w,button){
+  if(w.snapTimer)clearTimeout(w.snapTimer);
+  w.snapTimer=setTimeout(()=>showSnapLayouts(w,button),500);
+}
 function openApp(appId,arg){
   const app=OS.apps[appId];
   if(!app){ errorDialog("Shaurya OS could not open this application","The application “"+appId+"” is not registered in this simulator."); return null; }
@@ -857,7 +904,7 @@ function openApp(appId,arg){
     el("span",{text:app.icon}), el("span",{class:"t",text:app.name}),
     el("div",{class:"wc"},[
       el("button",{type:"button","aria-label":"Minimize",onclick:e=>{e.stopPropagation();minimizeWin(w);}},"─"),
-      el("button",{type:"button","aria-label":"Maximize or restore",onclick:e=>{e.stopPropagation();toggleMax(w);}},"▢"),
+      el("button",{class:"maxBtn",type:"button","aria-label":"Maximize or restore",onclick:e=>{e.stopPropagation();hideSnapLayouts(w);toggleMax(w);}},"▢"),
       el("button",{class:"cl",type:"button","aria-label":"Close",onclick:e=>{e.stopPropagation();closeWin(w);}},"✕")
     ])
   ]);
@@ -872,6 +919,9 @@ function openApp(appId,arg){
   bindDrag(w); bindResize(w);
   node_.addEventListener("pointerdown",()=>focusWin(w),true);
   tbar.addEventListener("dblclick",()=>toggleMax(w));
+  const maxBtn=tbar.querySelector(".maxBtn");
+  maxBtn.addEventListener("pointerenter",()=>armSnapLayouts(w,maxBtn));
+  maxBtn.addEventListener("pointerleave",()=>{w.snapTimer=setTimeout(()=>hideSnapLayouts(w),180);});
   tbar.addEventListener("contextmenu",e=>{ e.preventDefault(); windowCtx(w,e.clientX,e.clientY); });
   focusWin(w); Audio_.open(); renderTaskbar();
   addRecent(app.name,appId);
@@ -903,6 +953,7 @@ function minimizeWin(w){ w.minimized=true; w.el.style.transition="opacity 160ms,
 function restoreWin(w){ w.minimized=false; layout(w); focusWin(w); }
 function toggleMax(w){ if(w.maximized){ w.maximized=false; if(w.pre)Object.assign(w,w.pre); } else { w.pre={x:w.x,y:w.y,w:w.w,h:w.h}; w.maximized=true; } layout(w); renderTaskbar(); }
 function closeWin(w){
+  hideSnapLayouts(w);
   w.el.classList.add("closing"); Audio_.close();
   if(OS.apps[w.appId]&&OS.apps[w.appId].onClose){ try{ OS.apps[w.appId].onClose(w); }catch(e){} }
   if(w.cleanup)try{ w.cleanup(); }catch(e){}
@@ -911,7 +962,9 @@ function closeWin(w){
 }
 function snapTo(w,zone){
   const H=innerHeight-(parseInt(getComputedStyle(document.documentElement).getPropertyValue("--tb"))||56), W=innerWidth;
-  const g={left:[0,0,W/2,H],right:[W/2,0,W/2,H],tl:[0,0,W/2,H/2],tr:[W/2,0,W/2,H/2],bl:[0,H/2,W/2,H/2],br:[W/2,H/2,W/2,H/2]}[zone];
+  const g={left:[0,0,W/2,H],right:[W/2,0,W/2,H],wideLeft:[0,0,W*.6,H],wideRight:[W*.6,0,W*.4,H],
+    c1:[0,0,W/3,H],c2:[W/3,0,W/3,H],c3:[W*2/3,0,W/3,H],
+    tl:[0,0,W/2,H/2],tr:[W/2,0,W/2,H/2],bl:[0,H/2,W/2,H/2],br:[W/2,H/2,W/2,H/2]}[zone];
   if(zone==="max"){ if(!w.maximized){w.pre={x:w.x,y:w.y,w:w.w,h:w.h};w.maximized=true;} layout(w); return; }
   if(!g)return;
   if(!w.maximized&&!w.pre)w.pre={x:w.x,y:w.y,w:w.w,h:w.h};
@@ -934,6 +987,7 @@ function bindDrag(w){
   });
   w.tbar.addEventListener("pointermove",e=>{
     if(!drag)return;
+    w.el.style.opacity=".82";
     w.x=clamp(ox+e.clientX-sx,-w.w+80,innerWidth-80); w.y=clamp(oy+e.clientY-sy,0,innerHeight-60); layout(w);
     const z=zoneFor(e.clientX,e.clientY); const gh=$("#snapGhost");
     if(z!==zone){ zone=z;
@@ -942,7 +996,7 @@ function bindDrag(w){
         const g={max:[0,0,W,H],left:[0,0,W/2,H],right:[W/2,0,W/2,H],tl:[0,0,W/2,H/2],tr:[W/2,0,W/2,H/2],bl:[0,H/2,W/2,H/2],br:[W/2,H/2,W/2,H/2]}[z];
         gh.style.display="block"; gh.style.left=g[0]+"px"; gh.style.top=g[1]+"px"; gh.style.width=g[2]+"px"; gh.style.height=g[3]+"px"; } }
   });
-  const end=()=>{ if(!drag)return; drag=false; w.tbar.style.cursor="grab"; $("#snapGhost").style.display="none"; if(zone){ snapTo(w,zone); zone=null; } save(); };
+  const end=()=>{ if(!drag)return; drag=false; w.tbar.style.cursor="grab"; w.el.style.opacity=""; $("#snapGhost").style.display="none"; if(zone){ snapTo(w,zone); zone=null; } save(); };
   w.tbar.addEventListener("pointerup",end); w.tbar.addEventListener("pointercancel",end);
 }
 function bindResize(w){
@@ -1836,7 +1890,7 @@ reg("settings",{name:"Settings",icon:"⚙",single:true,w:880,h:600,render(w,body
           el("span",{class:"tiny",text:"Effective type: "+((navigator.connection&&navigator.connection.effectiveType)||"unavailable in browser")})]));
     } else if(cur==="Personalization"){
       add(chipRow("Theme",null,[["system","System"],["light","Light"],["dark","Dark"]],()=>s().theme,v=>s().theme=v),
-        chipRow("Wallpaper",null,[["aurora","Aurora"],["midnight","Midnight"],["obsidian","Obsidian"],["ocean","Ocean"],["solar","Solar"],["platinum","Platinum"],["solid","Solid accent"]],()=>s().wallpaper,v=>s().wallpaper=v),
+        chipRow("Wallpaper",null,[["bloom","SHAURYA Bloom"],["bloomSoft","Bloom Soft"],["aurora","Aurora"],["midnight","Midnight"],["obsidian","Obsidian"],["ocean","Ocean"],["solar","Solar"],["platinum","Platinum"],["solid","Solid accent"]],()=>s().wallpaper,v=>s().wallpaper=v),
         (()=>{ const inp=el("input",{type:"file",accept:"image/*",style:"display:none",onchange:e=>{ const f=e.target.files&&e.target.files[0]; if(!f)return;
             if(f.name.toLowerCase()==="shaurya.jpg"){ toast("shaurya.jpg is reserved for the Shaurya profile photo, not wallpaper."); return; }
             const rd=new FileReader(); rd.onload=()=>{ s().wallpaperImage=rd.result; s().wallpaperFileName=f.name; s().wallpaper="image"; applySettings(); save(); toast("Wallpaper updated"); };
@@ -1988,14 +2042,22 @@ function renderDesktop(){
 $("#desktop").addEventListener("contextmenu",e=>{
   if(e.target.closest(".dicon")||e.target.closest(".widget"))return; e.preventDefault();
   contextMenu(e.clientX,e.clientY,[
+    {icon:"☷",label:"View",run:()=>toast("Desktop view","SHAURYA icon grid view is active.")},
+    {icon:"↕",label:"Sort by",run:()=>{S.desktopIcons={};save();renderDesktop();toast("Desktop sorted","Icons arranged on the SHAURYA grid.");}},
     {icon:"⇱",label:"Arrange icons",run:()=>{ S.desktopIcons={}; save(); renderDesktop(); }},
     {icon:"⟳",label:"Refresh",key:"F5",run:()=>{ renderDesktop(); toast("Desktop refreshed"); }},
     "-",
     {icon:"＋",label:"New folder (in Desktop)",run:()=>dialog({title:"New folder",input:"New folder",onOk:v=>{ FS.create(FS.folderId("Desktop"),v,"folder"); notify("Folder created",v,"Desktop"); refreshExplorers(); }})},
+    {icon:"▣",label:"New text document",run:()=>{const n=FS.create(FS.folderId("Desktop"),"New text document.txt","file",{content:""});n.size=0;notify("Document created",n.name,"Desktop");refreshExplorers();}},
     {icon:"▷",label:"Open Terminal",run:()=>openApp("terminal")},
     "-",
     {icon:"🖥",label:"Display settings",run:()=>openApp("settings",{section:"System"})},
-    {icon:"🎨",label:"Personalize",run:()=>openApp("settings",{section:"Personalization"})}
+    {icon:"🎨",label:"Personalize",run:()=>openApp("settings",{section:"Personalization"})},
+    {icon:"☷",label:"Show more options",run:()=>contextMenu(e.clientX+18,e.clientY+18,[
+      {icon:"↗",label:"Open in Terminal",run:()=>openApp("terminal")},
+      {icon:"📁",label:"Open File Explorer",run:()=>openApp("explorer")},
+      {icon:"ⓘ",label:"Desktop properties",run:()=>openApp("settings",{section:"System"})}
+    ])}
   ]);
 });
 $("#desktop").addEventListener("pointerdown",e=>{
@@ -2046,7 +2108,7 @@ $("#taskbar").addEventListener("contextmenu",e=>{ if(e.target.closest(".tbBtn"))
     {icon:"⚙",label:"Taskbar settings",run:()=>openApp("settings",{section:"Personalization"})}]); });
 
 /* ============================== PANELS ================================= */
-const PANELS=["#startMenu","#searchPanel","#quickPanel","#notifPanel","#trayPanel"];
+const PANELS=["#startMenu","#searchPanel","#quickPanel","#notifPanel","#trayPanel","#commandPalette"];
 function closePanels(except){ PANELS.filter(p=>p!==except).forEach(p=>$(p).classList.remove("on")); }
 function togglePanel(sel){
   const p=$(sel), on=p.classList.contains("on");
@@ -2118,28 +2180,69 @@ $("#searchInput").addEventListener("keydown",e=>{
     items.forEach((n,i)=>n.setAttribute("aria-selected",i===searchSel?"true":"false")); items[searchSel].scrollIntoView({block:"nearest"}); }
   if(e.key==="Enter"){ e.preventDefault(); items[searchSel].click(); }
 });
+/* global SHAURYA Command Center */
+let commandSel=0;
+function commandActions(){
+  return [
+    ["Open Files","📁",()=>openApp("explorer")],["Open Settings","⚙",()=>openApp("settings")],
+    ["Open My Workspace","▦",()=>openApp("workspace")],["Open Focus Room","🎯",()=>openApp("focus")],
+    ["Open SHAURYA Shield","🛡",()=>openApp("shield")],["Open Media Player","🎵",()=>openApp("media")],
+    ["Start Focus Mode","🎯",()=>startFocusRoom("Deep Work")],["Restore last workspace","↶",()=>restoreWorkspaceCapsule()],
+    ["Export Workspace Capsule","⇩",()=>exportWorkspaceCapsule()],["Lock SHAURYA OS","🔒",()=>lockNow()],
+    ["Restart SHAURYA shell","⟳",()=>power("restart")],["Toggle Dark Mode","🌗",()=>{S.settings.theme=effTheme()==="dark"?"light":"dark";applySettings();save();notify("Theme changed","SHAURYA theme updated.","Command Center");}],
+    ["Set Bloom wallpaper","✦",()=>{S.settings.wallpaper="bloom";applySettings();save();notify("Wallpaper changed","SHAURYA Bloom is active.","Command Center");}],
+    ["Show Task View","🗗",()=>openTaskView()],["Open Calculator","∑",()=>openApp("calculator")],
+    ["Create a note","🗒",()=>{openApp("notes");notify("Notes ready","Create a new local note.","Command Center");}]
+  ];
+}
+function renderCommandPalette(q=""){
+  const box=$("#commandResults"); if(!box)return; box.textContent=""; commandSel=0;
+  const query=q.trim().toLowerCase();
+  const custom=commandActions().filter(x=>!query||x[0].toLowerCase().includes(query));
+  const indexed=query?searchIndex(query).map(r=>[r.label,r.icon,r.run]):[];
+  const rows=[...custom,...indexed].slice(0,24);
+  if(!rows.length){box.append(el("div",{class:"tiny",text:"No safe SHAURYA action matches that request."}));return;}
+  rows.forEach((r,i)=>box.append(el("button",{class:"listRow",type:"button","aria-selected":i===0?"true":"false",onclick:()=>{closeCommandPalette();r[2]();}},
+    [el("span",{class:"g",text:r[1]}),el("div",{class:"col"},[el("span",{text:r[0]}),el("span",{class:"tiny",text:i<custom.length?"SHAURYA action":"Search result"})])])));
+}
+function openCommandPalette(){
+  closePanels("#commandPalette"); const p=$("#commandPalette"); p.classList.add("on");
+  const i=$("#commandInput"); i.value=""; renderCommandPalette(""); setTimeout(()=>i.focus(),30); Audio_.click();
+}
+function closeCommandPalette(){ $("#commandPalette").classList.remove("on"); }
+$("#commandInput").addEventListener("input",e=>renderCommandPalette(e.target.value));
+$("#commandInput").addEventListener("keydown",e=>{
+  const items=$$("#commandResults .listRow"); if(e.key==="Escape"){e.preventDefault();closeCommandPalette();return;}
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();commandSel=clamp(commandSel+(e.key==="ArrowDown"?1:-1),0,Math.max(0,items.length-1));items.forEach((n,i)=>n.setAttribute("aria-selected",i===commandSel?"true":"false"));items[commandSel]?.scrollIntoView({block:"nearest"});}
+  if(e.key==="Enter"&&items[commandSel]){e.preventDefault();items[commandSel].click();}
+});
 /* quick settings */
 function renderQuick(){
   const g=$("#qsTiles"); g.textContent="";
+  const more=$("#qsMore"); if(more)more.textContent="";
   const s=S.settings;
   const tiles=[["Wi‑Fi","📶","wifi"],["Bluetooth","🔵","bluetooth"],["Airplane","✈","airplane"],["Battery saver","🪫","batterySaver"],
-    ["Night light","🌙","nightLight"],["Focus","🎯","focus"],["Dark mode","🌗","__dark"],["Calm motion","🍃","__calm"],["High contrast","◐","__contrast"]];
-  tiles.forEach(([label,icon,key])=>{
+    ["Night light","🌙","nightLight"],["Accessibility","♿","__access"]];
+  const extra=[["Focus","🎯","focus"],["Dark mode","🌗","__dark"],["Calm motion","🍃","__calm"],["High contrast","◐","__contrast"]];
+  const addTile=(host,[label,icon,key])=>{
     const on = key==="__dark"?effTheme()==="dark" : key==="__calm"?s.motion!=="full" : key==="__contrast"?s.contrast==="high" : !!s[key];
-    g.append(el("button",{class:"qTile",type:"button","aria-pressed":on?"true":"false","data-on":on?"1":"0",onclick:()=>{
+    host.append(el("button",{class:"qTile",type:"button","aria-pressed":on?"true":"false","data-on":on?"1":"0",onclick:()=>{
       if(key==="__dark")s.theme=effTheme()==="dark"?"light":"dark";
       else if(key==="__calm")s.motion=s.motion==="full"?"none":"full";
       else if(key==="__contrast")s.contrast=s.contrast==="high"?"normal":"high";
+      else if(key==="__access")s.largeCursor=!s.largeCursor;
       else { s[key]=!s[key]; if(key==="batterySaver")Perf.set(s[key]?"low":s.quality); if(key==="airplane"&&s[key])s.wifi=false; }
       applySettings(); save(); renderQuick(); Audio_.click(); notify("Settings updated",label+" is now "+(!on?"on":"off")+" (simulated where the browser has no control)","Quick settings");
     }},[el("span",{style:"font-size:18px",text:icon}),el("span",{text:label})]));
-  });
+  };
+  tiles.forEach(x=>addTile(g,x)); extra.forEach(x=>addTile(more||g,x));
   const v=$("#qsVol"), b=$("#qsBright");
   v.value=String(s.volume); b.value=String(s.brightness);
   v.oninput=()=>{ s.volume=+v.value; applySettings(); save(); };
   b.oninput=()=>{ s.brightness=+b.value; applySettings(); save(); };
 }
 $("#qsBtn").addEventListener("click",()=>togglePanel("#quickPanel"));
+$("#trayBtn").addEventListener("click",()=>togglePanel("#trayPanel"));
 $("#notifBtn").addEventListener("click",()=>togglePanel("#notifPanel"));
 $("#clockBtn").addEventListener("click",()=>togglePanel("#notifPanel"));
 $("#qsSettings").addEventListener("click",()=>{ closePanels(); openApp("settings",{section:"System"}); });
@@ -2259,7 +2362,9 @@ function tick(){
   const time=n.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit",second:s.showSeconds?"2-digit":undefined,hour12:!s.clock24});
   setText($("#lockTime"),time.replace(/\s?(AM|PM)/i,""));
   setText($("#lockDate"),n.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"}));
-  setText($("#tbTime"),time); setText($("#tbDate"),n.toLocaleDateString());
+  const dd=String(n.getDate()).padStart(2,"0"), mo=String(n.getMonth()+1).padStart(2,"0"), yyyy=n.getFullYear();
+  setText($("#tbTime"),s.clock24?String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0"):time);
+  setText($("#tbDate"),dd+"-"+mo+"-"+yyyy);
   setText($("#lockNet"),(S.settings.airplane?"✈":"📶")+" "+(navigator.onLine?"Online":"Offline"));
   setText($("#lockBat"),"🔋 Simulated");
 }
