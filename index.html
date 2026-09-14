@@ -136,7 +136,7 @@ html[data-theme="light"] .dicon{color:#0d1424;text-shadow:0 1px 3px rgba(255,255
 .widget h4{font-size:.82em;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-2);display:flex;justify-content:space-between}
 .widget .x{color:var(--ink-3)}
 /* windows */
-#windows{position:absolute;inset:0;z-index:20;pointer-events:none}
+#windows{position:absolute;inset:0 0 var(--tb,56px) 0;z-index:20;pointer-events:none}
 .win{position:absolute;pointer-events:auto;display:flex;flex-direction:column;border-radius:var(--radius-win);overflow:hidden;box-shadow:var(--shadow);background:var(--surface-solid);border:1px solid var(--line-strong);min-width:260px;min-height:150px;
   animation:winIn var(--dur-slow) var(--ease)}
 @keyframes winIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
@@ -351,16 +351,49 @@ canvas.paint{background:#fff;touch-action:none;display:block;border:1px solid va
   .mediaTop{padding:9px}.mediaArt{width:48px;height:48px}
 }
 /* ===================== 5. MOBILE SHELL ===================== */
-html[data-form="mobile"] .win{border-radius:0;border:0}
+html[data-form="mobile"] #shell{height:var(--vvh,100dvh);bottom:auto}
+html[data-form="mobile"] #desktop{inset:0 0 calc(58px + env(safe-area-inset-bottom)) 0}
+html[data-form="mobile"] #windows{inset:0 0 calc(58px + env(safe-area-inset-bottom)) 0}
+html[data-form="mobile"] .win{border-radius:0;border:0;min-width:0;min-height:0;width:100%!important;height:100%!important}
 html[data-form="mobile"] .rz{display:none}
-html[data-form="mobile"] #taskbar{height:62px}
-html[data-form="mobile"] #tbCenter{margin:0 auto}
-html[data-form="mobile"] #startMenu,html[data-form="mobile"] #searchPanel{left:0;right:0;transform:none;width:100%;bottom:70px;border-radius:18px 18px 0 0;max-height:76vh}
-html[data-form="mobile"] #quickPanel,html[data-form="mobile"] #notifPanel,html[data-form="mobile"] #trayPanel{left:6px;right:6px;width:auto;bottom:70px}
+html[data-form="mobile"] .titlebar{height:48px;padding:0 8px 0 14px;cursor:default;touch-action:pan-y}
+html[data-form="mobile"] .titlebar .t{font-size:.93em}
+html[data-form="mobile"] .wc button{width:48px}
+html[data-form="mobile"] .wbody{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+html[data-form="mobile"] #taskbar{height:calc(58px + env(safe-area-inset-bottom));min-height:58px;padding:5px 8px env(safe-area-inset-bottom)}
+html[data-form="mobile"] #tbCenter{margin:0;max-width:none;flex:1;justify-content:flex-start;overflow-x:auto}
+html[data-form="mobile"] #tbRight{flex:none}
+html[data-form="mobile"] .tbBtn{width:46px;height:46px}
+html[data-form="mobile"] .tray{min-height:46px;padding:5px 7px}
+html[data-form="mobile"] #clockBtn{padding:5px 7px;font-size:.76em}
+html[data-form="mobile"] #startMenu,html[data-form="mobile"] #searchPanel{
+  left:0;right:0;transform:none;width:100%;bottom:calc(58px + env(safe-area-inset-bottom));
+  border-radius:18px 18px 0 0;max-height:calc(var(--vvh,100dvh) - 76px);padding:14px
+}
+html[data-form="mobile"] #quickPanel,html[data-form="mobile"] #notifPanel,html[data-form="mobile"] #trayPanel{
+  left:6px;right:6px;width:auto;bottom:calc(58px + env(safe-area-inset-bottom));
+  max-height:calc(var(--vvh,100dvh) - 76px);padding:13px
+}
+html[data-form="mobile"] #commandPalette{top:8px;max-height:calc(var(--vvh,100dvh) - 16px);padding:13px}
+html[data-form="mobile"] .appBar{padding:10px 12px;max-height:32vh}
+html[data-form="mobile"] .main{padding:12px 12px calc(18px + env(safe-area-inset-bottom))}
+html[data-form="mobile"] .btn,
+html[data-form="mobile"] .qTile,
+html[data-form="mobile"] .pin,
+html[data-form="mobile"] .listRow,
+html[data-form="mobile"] .navItem{min-height:44px}
+html[data-form="mobile"] .qTile{padding:10px 7px}
+html[data-form="mobile"] .pin{padding:10px 6px}
+html[data-form="mobile"] .siteCard{padding:13px}
 html[data-form="mobile"] .widget{display:none}
 html[data-form="mobile"] .side{width:132px}
 html[data-form="mobile"] .dicon{width:78px}
-@media (max-width:640px){ .qGrid{grid-template-columns:repeat(2,1fr)} .split{flex-direction:column} .side{width:auto;border-right:0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;max-height:27vh;overflow-x:hidden;overflow-y:auto} .navItem{white-space:nowrap;width:auto} }
+@media (max-width:640px){
+  .qGrid{grid-template-columns:repeat(2,1fr)}
+  .split{flex-direction:column}
+  .side{width:auto;border-right:0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;max-height:27vh;overflow-x:hidden;overflow-y:auto}
+  .navItem{white-space:nowrap;width:auto}
+}
 </style>
 </head>
 <body>
@@ -498,7 +531,22 @@ html[data-form="mobile"] .dicon{width:78px}
    Sections: UTIL · STORAGE · STATE · AUDIO · THEME · PERF · NOTIFY · CTX
              · DIALOG · WINDOW MANAGER · DESKTOP · TASKBAR · PANELS · BOOT
    ========================================================================= */
- const OS = { VERSION:"2.0.0", BUILD:"ULTIMATE-browser", apps:{}, wins:[], zTop:100, seq:1 };
+  const OS = { VERSION:"3.0.0", BUILD:"MASTERPIECE-browser", apps:{}, wins:[], zTop:100, seq:1,
+    kernel:{mode:"browser-simulated",ring:"user-safe",processes:{},pageSize:4096,bootAt:performance.now()},
+    events:{}, memory:Object.create(null) };
+  const OS_Memory = OS.memory;
+  OS.on=(name,fn)=>(OS.events[name]||(OS.events[name]=[])).push(fn);
+  OS.emit=(name,payload)=>{(OS.events[name]||[]).slice().forEach(fn=>{try{fn(payload);}catch(e){}});};
+  OS.syscall=(action,params={})=>{
+    if(action==="open"&&OS.apps[params.id])return openApp(params.id,params.arg);
+    if(action==="notify")return notify(params.title||"SHAURYA OS",params.body||"",params.app||"System");
+    if(action==="memory:write"){OS_Memory[String(params.key)]=params.value;return true;}
+    if(action==="memory:read")return OS_Memory[String(params.key)];
+    if(action==="process:list")return Object.values(OS.kernel.processes);
+    return null;
+  };
+  OS.registerProcess=(appId,meta={})=>{const id=uid("proc");OS.kernel.processes[id]={id,appId,started:Date.now(),priority:meta.priority||"normal",state:"running"};return id;};
+  OS.endProcess=id=>{if(OS.kernel.processes[id])OS.kernel.processes[id].state="stopped";};
 /* Local demo password only; this is not secure authentication. */
 const ADMIN_PASSWORD = "ram303030";
 
@@ -554,7 +602,7 @@ const DEFAULT_SETTINGS = {
 let S = {
   settings:{...DEFAULT_SETTINGS}, users:[], session:{user:null,guest:false},
   fs:null, notifications:[], notes:[], events:{}, desktopIcons:{}, desktop:1, desktopCount:3,
-  photos:[], recent:[], updateHistory:[]
+  photos:[], recent:[], updateHistory:[], focusRoom:{active:false,preset:null,previous:null}
 };
 
 function defaultUsers(){ return [
@@ -629,7 +677,8 @@ let saveTimer=null;
 function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{
   const ns = S.session.guest?"guest:":"";
   Store.write(ns+"settings",S.settings); Store.write(ns+"fs",S.fs); Store.write(ns+"notes",S.notes);
-  Store.write(ns+"events",S.events); Store.write(ns+"icons",S.desktopIcons); Store.write(ns+"recent",S.recent);
+   Store.write(ns+"events",S.events); Store.write(ns+"icons",S.desktopIcons); Store.write(ns+"recent",S.recent);
+   Store.write(ns+"focusRoom",S.focusRoom); Store.write("capsules",Store.read("capsules",[]));
   Store.write("users",S.users); Store.write("session",S.session);
 },220); }
 function loadProfile(guest){
@@ -639,6 +688,7 @@ function loadProfile(guest){
   if(!Array.isArray(S.fs.bin))S.fs.bin=[];
   S.notes=Store.read(ns+"notes",[{id:uid("note"),title:"Ideas",body:"Shaurya OS notes are stored locally in this browser.",pinned:false,at:Date.now()}]);
   S.events=Store.read(ns+"events",{}); S.desktopIcons=Store.read(ns+"icons",{}); S.recent=Store.read(ns+"recent",[]);
+  S.focusRoom=Store.read(ns+"focusRoom",{active:false,preset:null,previous:null});
   applySettings();
 }
 
@@ -697,7 +747,7 @@ function applySettings(){
   $("#brightLayer").style.opacity = String((100-s.brightness)/145);
   $("#nightLayer").style.opacity = s.nightLight?"0.16":"0";
   applyWallpaper();
-  const tbH = (isMobile()?62:(s.taskbar==="compact"?44:48));
+  const tbH = (isMobile()?58:(s.taskbar==="compact"?44:48));
   r.style.setProperty("--tb", tbH+"px");
   if($("#trWifi")) { setText($("#trWifi"), s.airplane?"✈":(s.wifi?"📶":"🚫")); setText($("#trVol"), s.volume==0?"🔇":"🔊"); setText($("#trBat"), s.batterySaver?"🪫":"🔋"); }
 }
@@ -1543,6 +1593,64 @@ function downloadLocal(name,data,type="application/octet-stream"){
   const blob=data instanceof Blob?data:new Blob([data],{type}), url=URL.createObjectURL(blob), a=el("a",{href:url,download:name});
   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
 }
+function workspaceCapsulePayload(name="SHAURYA Workspace"){
+  return {
+    format:"SHAURYA-WORKSPACE-CAPSULE",version:1,name,created:new Date().toISOString(),
+    settings:JSON.parse(JSON.stringify(S.settings)),fs:JSON.parse(JSON.stringify(S.fs)),
+    notes:JSON.parse(JSON.stringify(S.notes)),desktop:S.desktop,desktopCount:S.desktopCount,
+    desktopIcons:JSON.parse(JSON.stringify(S.desktopIcons)),recent:JSON.parse(JSON.stringify(S.recent)),
+    windows:OS.wins.map(w=>({appId:w.appId,desktop:w.desktop,minimized:w.minimized,maximized:w.maximized,
+      x:w.x,y:w.y,w:w.w,h:w.h}))
+  };
+}
+function exportWorkspaceCapsule(name){
+  const capsule=workspaceCapsulePayload(name||"SHAURYA Workspace");
+  downloadLocal((capsule.name.replace(/[^\w-]+/g,"-")||"shaurya-workspace")+".shaurya.json",JSON.stringify(capsule,null,2),"application/json");
+  const saved=Store.read("capsules",[]); saved.unshift(capsule); Store.write("capsules",saved.slice(0,12));
+  notify("Workspace capsule exported",capsule.name+" is saved locally and ready to restore.","My Workspace");
+}
+function applyWorkspaceCapsule(c){
+  if(!c||c.format!=="SHAURYA-WORKSPACE-CAPSULE")return false;
+  if(c.settings)S.settings=Object.assign({},DEFAULT_SETTINGS,c.settings);
+  if(c.fs&&c.fs.nodes)S.fs=c.fs; if(Array.isArray(c.notes))S.notes=c.notes;
+  if(c.desktopIcons)S.desktopIcons=c.desktopIcons; if(Array.isArray(c.recent))S.recent=c.recent;
+  S.desktop=clamp(+c.desktop||1,1,Math.max(1,+c.desktopCount||1)); S.desktopCount=Math.max(1,+c.desktopCount||1);
+  OS.wins.slice().forEach(w=>{hideSnapLayouts(w);if(w.cleanup)try{w.cleanup();}catch(e){}w.el.remove();}); OS.wins=[];
+  applySettings(); renderDesktop();
+  (c.windows||[]).forEach(spec=>{if(OS.apps[spec.appId]){const w=openApp(spec.appId);if(w){w.desktop=clamp(+spec.desktop||1,1,S.desktopCount);w.minimized=!!spec.minimized;w.maximized=!!spec.maximized;Object.assign(w,{x:spec.x,y:spec.y,w:spec.w,h:spec.h});layout(w);}}});
+  renderTaskbar(); renderStart(); save(); return true;
+}
+function restoreWorkspaceCapsule(capsule){
+  const c=capsule||Store.read("capsules",[])[0];
+  if(!c){notify("No workspace capsule","Export or save a workspace before restoring it.","My Workspace");return;}
+  if(applyWorkspaceCapsule(c))notify("Workspace restored",c.name+" is active again.","My Workspace");
+}
+function importWorkspaceCapsule(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{try{
+    const c=JSON.parse(reader.result); if(!applyWorkspaceCapsule(c))throw new Error("format");
+    const saved=Store.read("capsules",[]);saved.unshift(c);Store.write("capsules",saved.slice(0,12));
+    notify("Workspace capsule imported",c.name||"Workspace","My Workspace");
+  }catch(e){errorDialog("Workspace capsule could not be opened","Choose a valid .shaurya.json export.");}};
+  reader.readAsText(file);
+}
+function startFocusRoom(preset="Deep Work"){
+  const modes={Study:["notes","calendar","calculator"],"Deep Work":["notes","code"],Creative:["image","collage","media"],Reading:["browser","documents"],Presentation:["browser","notes"],Relax:["media","relax"]};
+  if(!S.focusRoom){S.focusRoom={active:false,preset:null,previous:null};}
+  if(S.focusRoom.active)return;
+  S.focusRoom={active:true,preset,previous:{settings:JSON.parse(JSON.stringify(S.settings)),desktop:S.desktop}};
+  S.settings.focus=true; S.settings.nightLight=preset==="Reading"||preset==="Relax";
+  applySettings(); save();
+  (modes[preset]||modes["Deep Work"]).forEach(id=>{if(OS.apps[id])openApp(id);});
+  notify("Focus Room started",preset+" workspace is active. Notifications are being routed quietly.","Focus Room");
+}
+function stopFocusRoom(){
+  if(!S.focusRoom||!S.focusRoom.active)return;
+  const p=S.focusRoom.previous||{}; if(p.settings)S.settings=Object.assign({},DEFAULT_SETTINGS,p.settings);
+  S.focusRoom={active:false,preset:null,previous:null}; applySettings(); save();
+  notify("Focus Room ended","Your previous environment settings were restored.","Focus Room");
+}
 function suiteRow(label,value,action){
   return el("div",{class:"setRow"},[el("div",{class:"col"},[el("strong",{text:label}),el("span",{class:"tiny",text:value})]),action||el("span",{class:"badge good",text:"READY"})]);
 }
@@ -1685,8 +1793,74 @@ reg("command",{name:"Command Center",icon:"⌘",single:true,w:680,h:500,render(w
   body.append(el("div",{class:"app"},[el("div",{class:"appBar"},[el("strong",{text:"SHAURYA Command Center"}),q]),el("div",{class:"main"},[res,el("div",{class:"siteGrid"},[["Files","explorer","📁"],["Media","media","🎵"],["Themes","themes","🎨"],["Security","shield","🛡"]].map(([n,id,i])=>el("button",{class:"siteCard",type:"button",onclick:()=>openApp(id)},[el("span",{class:"siteIcon",text:i}),el("strong",{text:n})])))])]));setTimeout(()=>q.focus(),40);
 }});
 reg("workspace",{name:"My Workspace",icon:"▦",single:true,w:760,h:560,render(w,body){
-  const cards=[["Continue working","Open Notes","notes","🗒"],["Protect your workspace","Open SHAURYA Shield","shield","🛡"],["Create something","Open Code Studio","code","</>"],["Relax","Open Media Player","media","🎵"],["Your creations","Open My Creations","creations","✦"]];
-  body.append(el("div",{class:"app"},[el("div",{class:"appBar"},[el("strong",{text:"MY WORKSPACE"}),el("span",{class:"tiny",text:"Your local command deck"})]),el("div",{class:"main",style:"display:grid;gap:12px;align-content:start"},[el("div",{class:"card"},[el("strong",{style:"font-size:1.3em",text:"Welcome back, "+(S.session.user?.name||"Guest")}),el("span",{class:"muted",text:"Everything here runs locally in SHAURYA OS."})]),el("div",{class:"siteGrid"},cards.map(([a,b,id,i])=>el("button",{class:"siteCard",type:"button",onclick:()=>openApp(id)},[el("span",{class:"siteIcon",text:i}),el("strong",{text:a}),el("span",{class:"tiny",text:b})])))])])); 
+  const cards=[["Continue working","Open Notes","notes","🗒"],["Protect your workspace","Open SHAURYA Shield","shield","🛡"],["Create something","Open Code Studio","code","</>"],["Focus Room","Create a focused setup","focus","🎯"],["Your creations","Open My Creations","creations","✦"]];
+  const importer=el("input",{type:"file",accept:".json,.shaurya.json,application/json",style:"display:none",onchange:e=>importWorkspaceCapsule(e.target.files?.[0])});
+  const capsules=el("div",{class:"col",style:"gap:6px"}), drawCapsules=()=>{
+    capsules.textContent=""; const list=Store.read("capsules",[]);
+    if(!list.length){capsules.append(el("span",{class:"tiny",text:"No saved capsules yet. Export this workspace to create one."}));return;}
+    list.slice(0,5).forEach(c=>capsules.append(el("button",{class:"listRow",type:"button",onclick:()=>restoreWorkspaceCapsule(c)},[el("span",{class:"g",text:"◈"}),el("div",{class:"col"},[el("strong",{text:c.name||"Workspace"}),el("span",{class:"tiny",text:"Saved "+new Date(c.created).toLocaleString()})])])));
+  };
+   body.append(
+     el("div",{class:"app"},[
+       el("div",{class:"appBar"},[
+         el("strong",{text:"MY WORKSPACE"}),
+         el("span",{class:"tiny",text:"Your local command deck"}),
+         el("button",{class:"btn primary",type:"button",onclick:()=>{exportWorkspaceCapsule("SHAURYA "+(S.session.user?.name||"Workspace"));drawCapsules();}},"⇩ Export capsule"),
+         el("button",{class:"btn",type:"button",onclick:()=>importer.click()},"⇧ Import capsule"),
+         importer
+       ]),
+       el("div",{class:"main",style:"display:grid;gap:12px;align-content:start"},[
+         el("div",{class:"card"},[
+           el("strong",{style:"font-size:1.3em",text:"Welcome back, "+(S.session.user?.name||"Guest")}),
+           el("span",{class:"muted",text:"Everything here runs locally in SHAURYA OS. Exportable workspace capsules preserve your layout and session."})
+         ]),
+         el("div",{class:"siteGrid"},cards.map(([a,b,id,i])=>el("button",{class:"siteCard",type:"button",onclick:()=>openApp(id)},[
+           el("span",{class:"siteIcon",text:i}),
+           el("strong",{text:a}),
+           el("span",{class:"tiny",text:b})
+         ]))),
+         el("div",{class:"card",style:"display:grid;gap:8px"},[
+           el("strong",{text:"Saved workspace capsules"}),
+           capsules
+         ])
+       ])
+     ])
+   );
+   drawCapsules();
+}});
+reg("focus",{name:"Focus Room",icon:"🎯",single:true,w:700,h:520,render(w,body){
+  const select=el("select",{},["Study","Deep Work","Creative","Reading","Presentation","Relax"].map(x=>el("option",{value:x},x)));
+  const status=el("div",{class:"card",style:"display:grid;gap:5px"});
+  const update=()=>{const f=S.focusRoom||{};setText(status.querySelector("strong"),f.active?"Focus Room active":"Focus Room ready");setText(status.querySelector(".muted"),f.active?f.preset+" is running. Notifications are being routed quietly.":"Choose a preset and start a local session.");};
+  const start=()=>{startFocusRoom(select.value);update();}; const stop=()=>{stopFocusRoom();update();};
+   body.append(
+     el("div",{class:"app"},[
+       el("div",{class:"appBar"},[
+         el("strong",{text:"SHAURYA FOCUS ROOM"}),
+         el("span",{class:"badge",text:"LOCAL SESSION"})
+       ]),
+       el("div",{class:"main",style:"display:grid;gap:12px;align-content:start"},[
+         status,
+         el("div",{class:"card",style:"display:grid;gap:8px"},[
+           el("strong",{text:"Choose a mode"}),
+           select,
+           el("div",{class:"row"},[
+             el("button",{class:"btn primary",type:"button",onclick:start},"Start Focus Room"),
+             el("button",{class:"btn",type:"button",onclick:stop},"End session")
+           ])
+         ]),
+         el("div",{class:"siteGrid"},[
+           ["Reduce noise","Quiet notifications and visual clutter."],
+           ["Restore context","Keep the previous settings ready to restore."],
+           ["Open your tools","Launch apps selected for the chosen mode."]
+         ].map(([a,b])=>el("div",{class:"card"},[
+           el("strong",{text:a}),
+           el("span",{class:"tiny",text:b})
+         ])))
+       ])
+     ])
+   );
+   update();
 }});
 function regLocalTool(id,name,icon,description,features){
   reg(id,{name,icon,single:true,w:720,h:540,render(w,body){
@@ -1993,14 +2167,17 @@ const DESKTOP_ICONS=[["explorer","Files","📁"],["settings","Settings","⚙"],[
   ["camera","Camera","📷"],["code","Code Studio","</>"],["backup","Backup","💾"],["devices","Device Manager","🖥"],["performance","Performance","⚡"],
   ["help","Help","?"],["documents","Documents","▤"],["office","Office","▦"],["qr","QR Studio","▦"],["translator","Translator","文"],["calcpro","Calculator Pro","∑"],
   ["image","Image Editor","◩"],["collage","Collage Maker","▦"],["board","Design Board","◇"],["animation","Animation Studio","✧"],["wallpaper","Wallpaper Studio","✺"],
-  ["mail","Mail Demo","✉"],["contacts","Contacts","♙"],["rss","News Reader","◫"],["downloads","Downloads","⇩"],["network","Network","⌁"],
+  ["mail","Mail Demo","✉"],["contacts","Contacts","♙"],["rss","News Reader","◫"],["downloads","Downloads","⇩"],["network","Network","⌁"],["focus","Focus Room","🎯"],
   ["privacy","Privacy","◉"],["permissions","Permissions","⚿"],["incognito","Incognito","◌"],["gallery","Gallery","▧"],["games","Game Hub","♟"],
   ["relax","Relax","☾"],["storage","Storage","◫"],["recovery","Recovery","↻"],["updates","Updates","↥"],
   ["linkedin","LinkedIn","in"],["github","GitHub","◖"],["calculator","Calculator","🧮"],
   ["notepad","Notepad","📝"],["paint","Paint","🎨"],["photos","Photos","🖼"],["terminal","Terminal","▷"],["taskmgr","Task Manager","📊"],["store","Store","🛍"],["bin","Recycle Bin","🗑"]];
 function renderDesktop(){
   const d=$("#desktop"); $$(".dicon,.widget",d).forEach(n=>n.remove());
-  DESKTOP_ICONS.forEach(([id,name,icon],i)=>{
+  const visibleIcons=isMobile()
+    ? DESKTOP_ICONS.filter(([id])=>["explorer","browser","notes","calendar","settings","media"].includes(id))
+    : DESKTOP_ICONS;
+  visibleIcons.forEach(([id,name,icon],i)=>{
     const pos=S.desktopIcons[id]||{x:18,y:18+i*Math.round(96*S.settings.iconSize)};
     if(pos.y>innerHeight-140){ pos.x=18+Math.floor(pos.y/(innerHeight-140))*100; pos.y=18+(i%6)*96; }
     const n=el("button",{class:"dicon",type:"button",style:"left:"+pos.x+"px;top:"+pos.y+"px","data-id":id,"aria-label":name},
@@ -2077,7 +2254,10 @@ $("#desktop").addEventListener("pointerdown",e=>{
 function pinnedApps(){ const inst=Store.read("installed",["notes","paint","calendar"]);
   /* Keep the Start menu and taskbar calm. Every other app remains available
      through Search, All apps, desktop shortcuts, or its recent history. */
-  return ["explorer","browser","creations","workspace","media","shield","notes","calendar","calculator","settings","command","taskmgr","store"].concat(inst).filter((v,i,a)=>a.indexOf(v)===i); }
+  const base=isMobile()
+    ? ["explorer","browser","notes","calendar","settings","command"]
+    : ["explorer","browser","creations","workspace","media","shield","notes","calendar","calculator","settings","command","taskmgr","store"];
+  return base.concat(inst).filter((v,i,a)=>a.indexOf(v)===i); }
 function renderTaskbar(){
   const c=$("#tbCenter"); c.textContent="";
   c.append(el("button",{class:"tbBtn",id:"startBtn",type:"button","aria-label":"Start"},[el("span",{style:"display:grid;grid-template-columns:1fr 1fr;gap:2px;width:18px"},
@@ -2373,6 +2553,31 @@ function tick(){
 let touchY=null;
 $("#lock").addEventListener("touchstart",e=>{ touchY=e.touches[0].clientY; },{passive:true});
 $("#lock").addEventListener("touchend",e=>{ if(touchY!==null&&touchY-e.changedTouches[0].clientY>40)showLogin(); touchY=null; },{passive:true});
+/* Touch-first shell gestures: the desktop architecture stays shared, but
+   phones gain direct Start, Quick Settings, and desktop switching gestures. */
+let shellTouch=null;
+$("#shell").addEventListener("touchstart",e=>{
+  if(!isMobile()||!e.touches[0])return;
+   const target=e.target;
+   if(target.closest(".win,.panel,.dicon,input,textarea,select")&&!target.closest("#taskbar"))return;
+   const t=e.touches[0]; shellTouch={x:t.clientX,y:t.clientY,target};
+},{passive:true});
+$("#shell").addEventListener("touchend",e=>{
+  if(!shellTouch||!isMobile()||!e.changedTouches[0]){shellTouch=null;return;}
+  const t=e.changedTouches[0], dx=t.clientX-shellTouch.x, dy=t.clientY-shellTouch.y, target=shellTouch.target;
+   if(target.closest(".win,.panel,.dicon,input,textarea,select")&&!target.closest("#taskbar")){shellTouch=null;return;}
+  const edgeTarget=target.closest("#desktop,#taskbar");
+  if(edgeTarget&&Math.abs(dy)>70&&Math.abs(dy)>Math.abs(dx)){
+    if(shellTouch.y>innerHeight-96&&dy<0)togglePanel("#startMenu");
+    else if(shellTouch.y<80&&dy>0)togglePanel("#quickPanel");
+  } else if(target.closest("#desktop")&&Math.abs(dx)>110&&Math.abs(dx)>Math.abs(dy)){
+    const next=dx<0?Math.min(S.desktopCount,S.desktop+1):Math.max(1,S.desktop-1);
+    if(next!==S.desktop)switchDesktop(next);
+  }
+  shellTouch=null;
+},{passive:true});
+function updateViewportHeight(){document.documentElement.style.setProperty("--vvh",(window.visualViewport?window.visualViewport.height:innerHeight)+"px");}
+updateViewportHeight(); window.visualViewport?.addEventListener("resize",updateViewportHeight);
 /* boot */
 const BOOT_STEPS=["Initializing","Loading desktop services","Preparing user environment","Starting shell","Ready"];
 function runBoot(fast){
